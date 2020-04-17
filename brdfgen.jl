@@ -106,20 +106,23 @@ function integrateBRDF(NdotV::Float64, roughness::Float64, samples::Int64)::Vec2
     return [A / convert(Float64, samples), B / convert(Float64, samples)]
 end
 
+function writeLine(x, data, size, samples)
+    for y = 0:size-1
+	NoV = (y + 0.5) * (1.0 / size);
+	roughness = (x + 0.5) * (1.0 / size);
+        rg = integrateBRDF(NoV, roughness, samples)
+        data[x+1,y+1] = RGB{N0f16}(rg[1], rg[2], 0.0)
+    end
+end
+
 function main()
     samples = 1000
     size = 512
     progress::Int64 = 0
 
-    data = rand(RGB{N0f16}, size,size)
+    data = rand(RGB{N0f16}, size, size)
     for x = 0:size-1
-        for y = 0:size-1
-	    NoV = (y + 0.5) * (1.0 / size);
-	    roughness = (x + 0.5) * (1.0 / size);
-            rg = integrateBRDF(NoV, roughness, samples);
-            data[x+1,y+1] = RGB{N0f16}(rg[1], rg[2], 0.0)
-        end
-
+        writeLine(x, data, size, samples)
         progressNew = convert(Int64, ceil(100 * x / size))
 
         if (progressNew > progress)
@@ -130,10 +133,9 @@ function main()
         end
     end
 
-    @printf("\n")
-    
-    imshow(data)
     save(File(format"PNG", "brdfLUT.png"), data)
+
+    @printf("\nSaved to brdfLUT.png (%u samples)\n", samples)
 end
 
-main()
+@time main()
