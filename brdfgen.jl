@@ -2,7 +2,6 @@ using Images
 using Colors
 using FileIO
 using LinearAlgebra
-using ImageView
 using FileIO
 using Printf
 
@@ -112,13 +111,13 @@ function main()
     size = 512
     progress::Int64 = 0
 
-    data = rand(RGB{Float32}, size,size)
+    data = rand(RGB{N0f16}, size,size)
     for x = 0:size-1
         for y = 0:size-1
 	    NoV = (y + 0.5) * (1.0 / size);
 	    roughness = (x + 0.5) * (1.0 / size);
             rg = integrateBRDF(NoV, roughness, samples);
-            data[x+1,y+1] = RGB{Float32}(rg[1], rg[2], 0.0)
+            data[x+1,y+1] = RGB{N0f16}(rg[1], rg[2], 0.0)
         end
 
         progressNew = convert(Int64, ceil(100 * x / size))
@@ -132,12 +131,9 @@ function main()
     end
 
     @printf("\n")
-
     
     imshow(data)
-    # to check with reference pictures
-    rgb24 = convert.(RGB24, data)
-    save(File(format"PNG", "brdfLUT.png"), colorview(RGB,rgb24))
+    save(File(format"PNG", "brdfLUT.png"), data)
 end
 
 main()
