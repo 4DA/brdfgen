@@ -5,6 +5,7 @@ This is rewrite in Julia of https://github.com/HectorMF/BRDFGenerator
 
 # Banding problem
 <p align="center"><img src="problem.png" /></p>
+Problmetaic material has roughness f = 0.45 (not perceptual) and metallic f = 0.78
 
 If you have concentric bands on surface it is highly probably due to clamping of values in your BRDF lookup table. For this you need higher precision like 16 bits per channel. This program generates 512x512 brdf lookup table as png file with 16 bit depth.
 
